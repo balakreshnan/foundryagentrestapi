@@ -53,12 +53,19 @@ def fetch_weather(location: str) -> str:
 def ai_default_agent(query: str) -> str:
     returntxt = ""
 
+    # Define user functions
+    user_functions = {fetch_weather}
+
+    # Initialize the FunctionTool with user-defined functions
+    functions = FunctionTool(functions=user_functions)
+
     # Create an agent with the Bing Grounding tool
     agent = project_client.agents.create_agent(
         model=os.environ["MODEL_DEPLOYMENT_NAME"],  # Model deployment name
         name="functest-agent",  # Name of the agent
-        instructions="You are a helpful agent",  # Instructions for the agent
+        instructions="You are a helpful agent, use the tools to answer.",  # Instructions for the agent
         # tools=code_interpreter.definitions,  # Attach the tool
+        tools=functions.definitions,
     )
     print(f"Created agent, ID: {agent.id}")
 
